@@ -1,0 +1,6 @@
+[gd_scene format=2]
+
+[node name="cube" type="CSGBox"]
+width = 1.5
+height = 1.5
+depth = 1.5

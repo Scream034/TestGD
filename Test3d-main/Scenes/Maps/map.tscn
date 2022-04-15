@@ -1,0 +1,287 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://Scenes/Objects/menu.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Scripts/Control.gd" type="Script" id=2]
+[ext_resource path="res://Scripts/Camera.gd" type="Script" id=3]
+[ext_resource path="res://Resources/Fonts/Leto_text_normal.tres" type="DynamicFont" id=4]
+
+[sub_resource type="CanvasItemMaterial" id=4]
+render_priority = 1
+blend_mode = 1
+light_mode = 2
+
+[sub_resource type="GDScript" id=6]
+script/source = "extends RichTextLabel
+
+var is_visible = true
+var alpha: float
+
+func _physics_process(_delta):
+	if !is_visible:
+		alpha -= 0.004 if alpha > 0 else 0
+		add_color_override(\"default_color\", ColorN('lime', alpha))
+	if alpha <= 0:
+		queue_free()
+
+func _ready():
+	alpha = 1
+	$timer.start(4.24)
+	add_color_override(\"default_color\", ColorN('lime', alpha))
+	$timer.connect(\"timeout\", self, \"set_visible\", [false])
+
+func set_visible(_visible):
+	is_visible = _visible
+
+"
+
+[sub_resource type="SpatialMaterial" id=5]
+flags_transparent = true
+vertex_color_use_as_albedo = true
+albedo_color = Color( 0.443137, 0.443137, 0.443137, 1 )
+
+[sub_resource type="SpatialMaterial" id=7]
+albedo_color = Color( 0, 0.976471, 1, 1 )
+emission_enabled = true
+emission = Color( 0, 0.976471, 1, 1 )
+emission_energy = 3.0
+emission_operator = 0
+emission_on_uv2 = false
+
+[sub_resource type="CylinderMesh" id=8]
+material = SubResource( 7 )
+top_radius = 0.5
+bottom_radius = 0.5
+
+[sub_resource type="SpatialMaterial" id=9]
+albedo_color = Color( 1, 0, 0, 1 )
+emission_enabled = true
+emission = Color( 1, 0, 0, 1 )
+emission_energy = 3.0
+emission_operator = 0
+emission_on_uv2 = false
+
+[sub_resource type="CylinderMesh" id=10]
+material = SubResource( 9 )
+top_radius = 0.5
+bottom_radius = 0.5
+
+[sub_resource type="SpatialMaterial" id=11]
+albedo_color = Color( 0, 1, 0.109804, 1 )
+emission_enabled = true
+emission = Color( 0.0666667, 1, 0.0588235, 1 )
+emission_energy = 3.0
+emission_operator = 0
+emission_on_uv2 = false
+
+[sub_resource type="CylinderMesh" id=12]
+material = SubResource( 11 )
+top_radius = 0.5
+bottom_radius = 0.5
+
+[node name="map" type="Spatial"]
+
+[node name="sun" type="DirectionalLight" parent="."]
+transform = Transform( -0.871155, 0.116856, -0.4769, -0.242058, 0.742833, 0.624186, 0.427197, 0.6592, -0.618836, -0.281227, 7.52516, 0 )
+shadow_enabled = true
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 0.999173, -0.018421, 0.0362437, 0.0215233, 0.995962, -0.0871558, -0.0344918, 0.0878638, 0.995535, -3.99147, 4.22768, -0.0519075 )
+current = true
+far = 300.0
+script = ExtResource( 3 )
+
+[node name="Control" type="Control" parent="Camera"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="Camera/Control"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+margin_top = -14.0
+margin_right = 40.0
+custom_colors/font_color = Color( 0.113725, 1, 0, 1 )
+
+[node name="check" type="Label" parent="Camera/Control"]
+anchor_right = 1.0
+margin_bottom = 16.0
+custom_colors/font_color = Color( 0.172549, 1, 0, 1 )
+custom_fonts/font = ExtResource( 4 )
+text = "has object:  "
+align = 1
+uppercase = true
+
+[node name="check2" type="Label" parent="Camera/Control/check"]
+anchor_right = 1.0
+margin_left = 74.0
+margin_right = 74.0
+margin_bottom = 16.0
+custom_colors/font_color = Color( 1, 0, 0.294118, 1 )
+custom_fonts/font = ExtResource( 4 )
+text = "false"
+align = 1
+uppercase = true
+
+[node name="crosshair" type="ColorRect" parent="Camera/Control"]
+material = SubResource( 4 )
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -4.0
+margin_top = -4.0
+margin_right = 4.0
+margin_bottom = 4.0
+color = Color( 0.231373, 0.784314, 0.317647, 0.423529 )
+
+[node name="info" type="RichTextLabel" parent="Camera/Control"]
+anchor_bottom = 1.0
+margin_right = 266.0
+custom_constants/line_separation = 12
+text = "This project is test!
+Don't kill me.
+
+	Controls
+1. Menu - E
+2. Movement:
+ 2.1 Forward - W
+ 2.2 Backward - S
+ 2.3 Left - A
+ 2.4 Right - D
+3. Select position - LEFT CLICK to mouse
+4. Restart - R
+5. Switch movement mode - X
+6. Switch test to 2D - F6
+
+   made  by @paralax or @Scream034
+				GOOD LUCK!
+
+"
+scroll_active = false
+script = SubResource( 6 )
+
+[node name="timer" type="Timer" parent="Camera/Control/info"]
+
+[node name="menu" parent="Camera" instance=ExtResource( 1 )]
+
+[node name="RayCast" type="RayCast" parent="Camera"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.850748 )
+enabled = true
+cast_to = Vector3( 0, 0, -30 )
+collide_with_areas = true
+
+[node name="polygon" type="CSGPolygon" parent="Camera/RayCast"]
+transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.0717573, -0.059433, 0.110109 )
+visible = false
+polygon = PoolVector2Array( 0, 0, 0, 0.14, 0.14, 0.14, 0.14, 0 )
+depth = 0.14
+smooth_faces = true
+
+[node name="timer" type="Timer" parent="Camera"]
+one_shot = true
+
+[node name="timer2" type="Timer" parent="Camera"]
+one_shot = true
+
+[node name="timer" type="Timer" parent="Camera/timer2"]
+one_shot = true
+
+[node name="timer2" type="Timer" parent="Camera/timer2"]
+one_shot = true
+
+[node name="ground" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0137517, 0 )
+use_collision = true
+width = 125.0
+height = 0.344224
+depth = 125.0
+material = SubResource( 5 )
+
+[node name="cube" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 8.03848, 1.38863, -2.24175 )
+use_collision = true
+width = 2.84179
+height = 3.79044
+depth = 4.75163
+
+[node name="cube5" type="CSGBox" parent="cube"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.28525, -1.58956, 0 )
+operation = 2
+use_collision = true
+width = 2.84179
+height = 3.79044
+depth = 4.75163
+
+[node name="cube2" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 3.42278, 1.38863, -2.24175 )
+use_collision = true
+width = 2.84179
+height = 3.79044
+depth = 4.75163
+
+[node name="cube3" type="CSGBox" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 5.73332, 4.95876, -2.24175 )
+use_collision = true
+width = 2.84179
+height = 3.79044
+depth = 4.75163
+
+[node name="cube4" type="CSGBox" parent="cube3"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.27832, 1.53252, 0 )
+operation = 2
+use_collision = true
+width = 2.84179
+height = 3.79044
+depth = 4.75163
+
+[node name="cube4" type="CSGBox" parent="."]
+transform = Transform( 0.44974, 0, -0.89316, 0, 1, 0, 0.89316, 0, 0.44974, -2.76831, 1.38863, 6.61964 )
+use_collision = true
+width = 2.84179
+height = 3.79044
+depth = 4.75163
+
+[node name="cube5" type="CSGBox" parent="cube4"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.28525, -1.58956, 0 )
+operation = 2
+use_collision = true
+width = 2.84179
+height = 3.79044
+depth = 4.75163
+
+[node name="cube5" type="CSGBox" parent="."]
+transform = Transform( 0.44974, 0, -0.89316, 0, 1, 0, 0.89316, 0, 0.44974, -4.84418, 1.38863, 2.49708 )
+use_collision = true
+width = 2.84179
+height = 3.79044
+depth = 4.75163
+
+[node name="cube6" type="CSGBox" parent="."]
+transform = Transform( 0.44974, 0, -0.89316, 0, 1, 0, 0.89316, 0, 0.44974, -3.80503, 1.13184, 4.56076 )
+use_collision = true
+width = 2.84179
+height = 3.79044
+depth = 4.75163
+
+[node name="cube4" type="CSGBox" parent="cube6"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3936, 1.69073, -0.0223274 )
+operation = 2
+use_collision = true
+width = 2.84179
+height = 3.79044
+depth = 4.75163
+
+[node name="line_z" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 10000, 0, -4.09837, 1.5199 )
+mesh = SubResource( 8 )
+material/0 = null
+
+[node name="line_x" type="MeshInstance" parent="."]
+transform = Transform( 10000, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.09837, 1.5199 )
+mesh = SubResource( 10 )
+material/0 = null
+
+[node name="line_y" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 10000, 0, 0, 0, 1, 0, -4.09837, 1.5199 )
+mesh = SubResource( 12 )
+material/0 = null
